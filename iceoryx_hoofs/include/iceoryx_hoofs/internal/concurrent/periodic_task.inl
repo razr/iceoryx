@@ -60,7 +60,7 @@ inline void PeriodicTask<T>::start(const units::Duration interval) noexcept
     stop();
     m_interval = interval;
     m_taskExecutor = std::thread(&PeriodicTask::run, this);
-    posix::setThreadName(m_taskExecutor.native_handle(), m_taskName);
+    posix::setThreadName((unsigned long)m_taskExecutor.native_handle(), m_taskName);
 }
 
 template <typename T>

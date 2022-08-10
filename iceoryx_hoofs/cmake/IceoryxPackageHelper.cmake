@@ -189,7 +189,7 @@ endMacro()
 Macro(iox_add_executable)
     set(switches USE_C_LANGUAGE PLACE_IN_BUILD_ROOT)
     set(arguments TARGET STACK_SIZE)
-    set(multiArguments FILES LIBS INCLUDE_DIRECTORIES LIBS_QNX LIBS_LINUX LIBS_UNIX LIBS_WIN32 LIBS_APPLE
+    set(multiArguments FILES LIBS INCLUDE_DIRECTORIES LIBS_QNX LIBS_LINUX LIBS_VXWORKS LIBS_UNIX LIBS_WIN32 LIBS_APPLE
         BUILD_INTERFACE INSTALL_INTERFACE)
     cmake_parse_arguments(IOX "${switches}" "${arguments}" "${multiArguments}" ${ARGN} )
 
@@ -205,6 +205,8 @@ Macro(iox_add_executable)
         target_link_libraries(${IOX_TARGET} ${IOX_LIBS_APPLE})
     elseif ( WIN32 )
         target_link_libraries(${IOX_TARGET} ${IOX_LIBS_WIN32})
+    elseif ( VXWORKS )
+	target_link_libraries(${IOX_TARGET} ${IOX_LIBS_VXWORKS})
     elseif ( UNIX )
         target_link_libraries(${IOX_TARGET} ${IOX_LIBS_UNIX})
     endif()
@@ -239,6 +241,8 @@ Macro(iox_add_executable)
         elseif(APPLE)
             # TODO iox-#1287
             # not yet supported
+        elseif(VXWORKS)
+            # target_link_options(${IOX_TARGET} BEFORE PRIVATE -Wl,-z,stack-size=${IOX_STACK_SIZE})
         elseif(UNIX)
             target_link_options(${IOX_TARGET} BEFORE PRIVATE -Wl,-z,stack-size=${IOX_STACK_SIZE})
         else()
@@ -271,6 +275,7 @@ Macro(iox_add_library)
         INSTALL_INTERFACE ADDITIONAL_EXPORT_TARGETS
         PUBLIC_INCLUDES PRIVATE_INCLUDES
         PUBLIC_LIBS_LINUX PRIVATE_LIBS_LINUX PUBLIC_LIBS_QNX PRIVATE_LIBS_QNX
+	PUBLIC_LIBS_VXWORKS PRIVATE_LIBS_VXWORKS
         PUBLIC_LIBS_UNIX PRIVATE_LIBS_UNIX PUBLIC_LIBS_WIN32 PRIVATE_LIBS_WIN32
         PUBLIC_LIBS_APPLE PRIVATE_LIBS_APPLE)
     cmake_parse_arguments(IOX "${switches}" "${arguments}" "${multiArguments}" ${ARGN} )
@@ -335,6 +340,8 @@ Macro(iox_add_library)
         target_link_libraries(${IOX_TARGET} PUBLIC ${IOX_PUBLIC_LIBS_APPLE} PRIVATE ${IOX_PRIVATE_LIBS_APPLE})
     elseif ( QNX )
         target_link_libraries(${IOX_TARGET} PUBLIC ${IOX_PUBLIC_LIBS_QNX} PRIVATE ${IOX_PRIVATE_LIBS_QNX})
+    elseif ( VXWORKS )
+	target_link_libraries(${IOX_TARGET} PUBLIC ${IOX_PUBLIC_LIBS_VXWORKS} PRIVATE ${IOX_PRIVATE_LIBS_VXWORKS})
     elseif ( UNIX )
         target_link_libraries(${IOX_TARGET} PUBLIC ${IOX_PUBLIC_LIBS_UNIX} PRIVATE ${IOX_PRIVATE_LIBS_UNIX})
     elseif ( WIN32 )

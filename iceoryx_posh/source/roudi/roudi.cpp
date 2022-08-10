@@ -66,7 +66,7 @@ RouDi::RouDi(RouDiMemoryInterface& roudiMemoryInterface,
 
     // run the threads
     m_monitoringAndDiscoveryThread = std::thread(&RouDi::monitorAndDiscoveryUpdate, this);
-    posix::setThreadName(m_monitoringAndDiscoveryThread.native_handle(), "Mon+Discover");
+    posix::setThreadName((unsigned long)m_monitoringAndDiscoveryThread.native_handle(), "Mon+Discover");
 
     if (roudiStartupParameters.m_runtimesMessagesThreadStart == RuntimeMessagesThreadStart::IMMEDIATE)
     {
@@ -82,7 +82,7 @@ RouDi::~RouDi() noexcept
 void RouDi::startProcessRuntimeMessagesThread() noexcept
 {
     m_handleRuntimeMessageThread = std::thread(&RouDi::processRuntimeMessages, this);
-    posix::setThreadName(m_handleRuntimeMessageThread.native_handle(), "IPC-msg-process");
+    posix::setThreadName((unsigned long)m_handleRuntimeMessageThread.native_handle(), "IPC-msg-process");
 }
 
 void RouDi::shutdown() noexcept
