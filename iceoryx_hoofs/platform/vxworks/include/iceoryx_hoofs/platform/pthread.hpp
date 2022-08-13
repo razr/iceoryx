@@ -19,20 +19,34 @@
 #define IOX_HOOFS_VXWORKS_PLATFORM_PTHREAD_HPP
 
 #include <pthread.h>
+#include <string.h>
+#include <taskLib.h>
+#include <private/taskLibP.h>
+#include <private/pthreadLibP.h>
 
 #define PTHREAD_MUTEX_RECURSIVE_NP PTHREAD_MUTEX_RECURSIVE
 #define PTHREAD_MUTEX_FAST_NP PTHREAD_MUTEX_DEFAULT
+
+#define PTHREAD_TO_NATIVE_TASK(thId)     (((pthreadCB *)(thId))->vxTaskId)
 
 using iox_pthread_t = pthread_t;
 using iox_pthread_attr_t = pthread_attr_t;
 
 inline int iox_pthread_setname_np(iox_pthread_t thread, const char* name)
 {
+    WIND_TCB *pTcb;
+
+    taskTcbGet(PTHREAD_TO_NATIVE_TASK (thread), &pTcb);
+    strncpy(pTcb->user.pName, name, strlen(name)<16?strlen(name)+1:15);
     return 0;
 }
 
 inline int iox_pthread_getname_np(iox_pthread_t thread, char* name, size_t len)
 {
+    char * tn;
+
+    tn = taskName(PTHREAD_TO_NATIVE_TASK (thread));
+    strncpy(name, tn, len);
     return 0;
 }
 
