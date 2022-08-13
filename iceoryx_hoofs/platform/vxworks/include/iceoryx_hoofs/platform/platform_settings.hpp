@@ -18,19 +18,20 @@
 
 #include <cstdint>
 #include <limits.h>
+#include <base/b_pthread_shared.h>
 
 namespace iox
 {
 namespace platform
 {
 /// defined so that it is consistent to linux
-constexpr uint64_t IOX_MAX_SEMAPHORE_NAME_LENGTH = 251U;
+constexpr uint64_t IOX_MAX_SEMAPHORE_NAME_LENGTH = _PTHREAD_SHARED_SEM_NAME_MAX;
 constexpr bool IOX_SUPPORT_NAMED_SEMAPHORE_OVERFLOW_DETECTION = true;
 
 constexpr uint64_t IOX_MAX_FILENAME_LENGTH = NAME_MAX;
 constexpr uint64_t IOX_MAX_PATH_LENGTH = PATH_MAX;
 constexpr bool IOX_SHM_WRITE_ZEROS_ON_CREATION = true;
-constexpr uint64_t IOX_MAX_SHM_NAME_LENGTH = 1024U;
+constexpr uint64_t IOX_MAX_SHM_NAME_LENGTH = NAME_MAX;
 constexpr uint64_t IOX_NUMBER_OF_PATH_SEPARATORS = 1U;
 constexpr const char IOX_PATH_SEPARATORS[IOX_NUMBER_OF_PATH_SEPARATORS] = {'/'};
 constexpr uint64_t IOX_UDS_SOCKET_MAX_MESSAGE_SIZE = 2048;
