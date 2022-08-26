@@ -18,5 +18,7 @@
 
 int iox_open(const char* pathname, int flags, mode_t mode)
 {
-    return open(pathname, flags, mode);
+    /* open is done as O_CREAT | O_RDONLY, but later on a flock as executed as LOCK_EX | LOCK_NB, 
+     * and an advisory locking tries to acquire a write lock (F_WRLCK) and fails */
+    return open(pathname, flags|O_RDWR, mode);
 }

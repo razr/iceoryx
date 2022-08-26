@@ -15,15 +15,33 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "iceoryx_hoofs/platform/socket.hpp"
+#include "iceoryx_hoofs/platform/platform_settings.hpp"
 #include <unistd.h>
+#include <sys/un.h>
+#include <string.h>
+#include <strings.h>
+#include <stdio.h>
 
 int iox_bind(int sockfd, const struct sockaddr* addr, socklen_t addrlen)
 {
+    /* /comp/socket/0x1234 is a hardcoded path in VxWorks, convert basename to the 0x1234 format  */
+    int i, sum = 0;
+    char *basename = &((struct sockaddr_un*)addr)->sun_path[strlen(iox::platform::IOX_UDS_SOCKET_PATH_PREFIX)];
+
+    /* calculate a sum from the name to make it consistent for unlinking */
+    for (i = 0; i < (int)strlen(basename); i++)
+        sum += basename[i];
+
+    sprintf(&((struct sockaddr_un*)addr)->sun_path[0], "%s0x%04x", iox::platform::IOX_UDS_SOCKET_PATH_PREFIX, sum % 0xffff);
+    unlink(&(((struct sockaddr_un*)addr)->sun_path[0]));
+
     return bind(sockfd, addr, addrlen);
 }
 
 int iox_socket(int domain, int type, int protocol)
 {
+    /* there is no SOCK_DGRAM in VxWorks */
+    type = SOCK_SEQPACKET;
     return socket(domain, type, protocol);
 }
 
